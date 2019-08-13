@@ -1,1 +1,2 @@
 bug fixed
+new feature to merge into develop branch before merging changes from release branch
