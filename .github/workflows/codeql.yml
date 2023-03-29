@@ -35,7 +35,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}"\
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repos/knikos/bookmark-manager/actions/workflows/CodeQL/dispatches \
-            -d '{"ref":"${{ github.event.pull_request.base.ref || DEFAULT_BRANCH }}","inputs":{"caminojsBranch":"${{ github.event.pull_request.base.ref || DEFAULT_BRANCH}}"}'
+            -d '{"ref":"${{ github.event.pull_request.base.ref || \"DEFAULT_BRANCH\" }}","inputs":{"caminojsBranch":"${{ github.event.pull_request.base.ref || \"DEFAULT_BRANCH\"}}"}'
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
