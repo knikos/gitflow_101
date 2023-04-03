@@ -13,8 +13,8 @@ name: "CodeQL"
 
 env:
   DEFAULT_BRANCH: master
-  INSTALLATION_ID: 35823540
-  APP_ID: 311485
+  INSTALLATION_ID: ${{ vars.INSTALLATION_ID }}
+  APP_ID: ${{ vars.APP_ID }}
 on:
   push:
     branches: [ "master" ]
@@ -35,13 +35,14 @@ jobs:
         run: |
            git clone https://github.com/gasconleon/jwt.sh.git && cd jwt.sh
            echo "${{ secrets.APP_311485_PK }}" >> private.pem
-           export jwt=$(./jwt.sh -a RS256 -P private.pem -p '{"exp": '$(date +%s -d +1minute)', "iat": '$(date +%s)', "iss": "${{env.APP_ID}}"}')
+           export jwt=$(./jwt.sh -a RS256 -P private.pem -p '{"exp": "$(date +%s -d +1hour)", "iat": "$(date +%s)", "iss": "${{env.APP_ID}}"}')
+           echo "JWT: " + $jwt
            echo "jwt=${jwt}" >> $GITHUB_OUTPUT
       - name: Generate token
         id: gen-token
         shell: bash
         run: |
-          curl -X POST -H "Authorization: Bearer ${{ steps.gen-jwt.outputs.jwt }}" -H "Accept: application/vnd.github.v3+json" https://api.github.com/app/installations/${{env.INSTALLATION_ID}}/access_tokens
+          curl -X POST -H "Authorization: Bearer ${{ steps.gen-jwt.outputs.jwt }}" -H "Accept: application/vnd.github.v3+json" https://api.github.com/app/installations/${{env.INSTALLATION_ID}}/access_tokens | jq -r .'token'
           export token=$(curl -X POST -H "Authorization: Bearer ${{ steps.gen-jwt.outputs.jwt }}" -H "Accept: application/vnd.github.v3+json" https://api.github.com/app/installations/${{env.INSTALLATION_ID}}/access_tokens | jq -r .'token')
           echo "token=${token}" >> $GITHUB_OUTPUT
       - name: Run e2e tests in caminojs
@@ -52,7 +53,7 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: token ${{ steps.gen-token.outputs.token }}"\
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/knikos/bookmark-manager/actions/workflows/codeql.yml/dispatches -d '{"ref":"main"}'
+            https://api.github.com/repos/knikos/bookmark-manager/actions/workflows/codeql.yml/dispatches -d '{"ref":"'${{env.DEFAULT_BRANCH}}'"}'
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
