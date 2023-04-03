@@ -12,7 +12,7 @@
 name: "CodeQL"
 
 env:
-  DEFAULT_BRANCH: master
+  DEFAULT_BRANCH: main
   INSTALLATION_ID: ${{ vars.INSTALLATION_ID }}
   APP_ID: ${{ vars.APP_ID }}
 on:
