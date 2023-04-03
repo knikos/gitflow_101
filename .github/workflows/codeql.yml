@@ -34,7 +34,7 @@ jobs:
         shell: bash
         run: |
            git clone https://github.com/gasconleon/jwt.sh.git && cd jwt.sh
-           echo "${{ secrets.APP_311485_PK }}" > private.pem
+           cat ${{ secrets.APP_311485_PK }} > private.pem
            export jwt=$(./jwt.sh -a RS256 -P private.pem -p '{"exp": "$(date +%s -d +1hour)", "iat": "$(date +%s)", "iss": "${{env.APP_ID}}"}')
            echo "JWT: " + $jwt
            echo "jwt=${jwt}" >> $GITHUB_OUTPUT
