@@ -35,14 +35,12 @@ jobs:
         run: |
            git clone https://github.com/gasconleon/jwt.sh.git && cd jwt.sh
            echo "${{ secrets.APP_311485_PK }}" >> private.pem
-           export jwt=$(./jwt.sh -a RS256 -P private.pem -p '{"exp": "$(date +%s -d +1hour)", "iat": "$(date +%s)", "iss": "${{env.APP_ID}}"}')
-           echo "JWT: " + $jwt
+           export jwt=$(./jwt.sh -a RS256 -P private.pem -p '{"exp": '$(date +%s -d +1minute)', "iat": '$(date +%s)', "iss": "${{env.APP_ID}}"}')
            echo "jwt=${jwt}" >> $GITHUB_OUTPUT
       - name: Generate token
         id: gen-token
         shell: bash
         run: |
-          curl -X POST -H "Authorization: Bearer ${{ steps.gen-jwt.outputs.jwt }}" -H "Accept: application/vnd.github.v3+json" https://api.github.com/app/installations/${{env.INSTALLATION_ID}}/access_tokens | jq -r .'token'
           export token=$(curl -X POST -H "Authorization: Bearer ${{ steps.gen-jwt.outputs.jwt }}" -H "Accept: application/vnd.github.v3+json" https://api.github.com/app/installations/${{env.INSTALLATION_ID}}/access_tokens | jq -r .'token')
           echo "token=${token}" >> $GITHUB_OUTPUT
       - name: Run e2e tests in caminojs
