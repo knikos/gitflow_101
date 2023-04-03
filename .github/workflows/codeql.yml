@@ -35,9 +35,7 @@ jobs:
         run: |
            git clone https://github.com/gasconleon/jwt.sh.git && cd jwt.sh
            echo "${{ secrets.APP_311485_PK }}" >> private.pem
-           export payload=$(eval echo '{"exp": "$(date +%s -d +1hour)", "iat": "$(date +%s)", "iss": "${{env.APP_ID}}"}')
-           echo $payload
-           export jwt=$(./jwt.sh -a RS256 -P private.pem -p '$payload')
+           export jwt=$(./jwt.sh -a RS256 -P private.pem -p '{"exp": '$(date +%s -d +1hour)', "iat": '$(date +%s)', "iss": "${{env.APP_ID}}"}')
            echo "jwt=${jwt}" >> $GITHUB_OUTPUT
       - name: Generate token
         id: gen-token
